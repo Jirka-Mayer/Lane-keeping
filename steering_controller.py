@@ -19,6 +19,9 @@ class SteeringController():
         self.sensitivity = 800
         self.currentPosition = 0
 
+        # if the keyboard overrides the network
+        self.keyboardActive = False
+
         # bind listeners
         keyboardHook.addTapListener(self.keyboardTap)
         mouseHook.addMoveListener(self.mouseMove)
@@ -30,17 +33,21 @@ class SteeringController():
     def keyboardTap(self, keycode, character, press):
         if character == "d":
             if press:
+                self.keyboardActive = True
                 self.xPos = 1.0
                 self.neutralPosition = self.currentPosition
             else:
+                self.keyboardActive = False
                 self.xPos = 0.0
             self.updateJoystick()
 
         if character == "a":
             if press:
+                self.keyboardActive = True
                 self.xPos = -1.0
                 self.neutralPosition = self.currentPosition
             else:
+                self.keyboardActive = False
                 self.xPos = 0.0
             self.updateJoystick()
 
@@ -56,4 +63,12 @@ class SteeringController():
             self.xPos = -1
 
         # update joystick
+        self.updateJoystick()
+
+    def steerNetwork(self, steering):
+        if self.keyboardActive:
+            return
+        
+        self.xPos = steering
+        self.neutralPosition = self.currentPosition
         self.updateJoystick()
