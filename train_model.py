@@ -11,8 +11,8 @@ from keras.layers.normalization import BatchNormalization
 #from keras import regularizers
 
 # load training data
-training_X = pickle.load(open("training-data-1-input.p", "rb"))
-training_Y = pickle.load(open("training-data-1-output.p", "rb"))
+training_X = pickle.load(open("training-data-2-input.p", "rb"))
+training_Y = pickle.load(open("training-data-2-output.p", "rb"))
 
 # shuffle data
 training_X, training_Y = sklearn.utils.shuffle(training_X, training_Y)
@@ -24,7 +24,7 @@ training_X, validation_X, training_Y, validation_Y = sklearn.model_selection.tra
 
 # parameters
 batch_size = 128
-epochs = 10
+epochs = 50
 pool_size = (2, 2)
 input_shape = training_X.shape[1:]
 

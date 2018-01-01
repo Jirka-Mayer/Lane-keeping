@@ -5,8 +5,15 @@ import os
 import scipy.misc
 import matplotlib.pyplot as plt
 
-RECORDING_NAME = "recording-1"
-TRAINING_DATA_NAME = "training-data-1"
+SOURCES = [
+    ["recording-1-filtered", 0.0],
+    ["recording-center", 0.0],
+    ["recording-left", 0.04],
+    ["recording-flat-left", 0.04],
+    ["recording-right", -0.04],
+    ["recording-flat-right", -0.04],
+]
+TRAINING_DATA_NAME = "training-data-3"
 
 TRAINING_WIDTH = 160
 TRAINING_HEIGHT = 80
@@ -26,29 +33,47 @@ def prepareFrame(training_X, training_Y, framePath, steering):
     training_Y.append(steering / STEERING_NORMALIZATION)
 
 
-# load recording
-steeringData = pickle.load(open(RECORDING_NAME + "/_steeringData.p", "rb"))
+def processFolder(training_X, training_Y, folderName, steeringOffset=0.0):
+    print("================================")
+    print("Folder: " + folderName)
+    
+    # load recording
+    steeringData = pickle.load(open(folderName + "/_steeringData.p", "rb"))
+
+    # go through all frames
+    i = 0
+    for item in steeringData:
+        framePath = folderName + "/frame-" + str(item[0]) + ".png"
+        
+        # check frame existence
+        if not os.path.isfile(framePath):
+            continue
+
+        # convert
+        prepareFrame(
+            training_X,
+            training_Y,
+            framePath,
+            item[1] + steeringOffset
+        )
+
+        i += 1
+
+        if i % 50 == 0:
+            print("Frame: " + str(i))
+
+    print(str(i) + " frames total.")
+
 
 # prepare training data variables
 training_X = []
 training_Y = []
 
-# go over all frames and prepare them
-i = 0
-for item in steeringData:
-    framePath = RECORDING_NAME + "/frame-" + str(item[0]) + ".png"
-    
-    # check frame existence
-    if not os.path.isfile(framePath):
-        continue
+# go over all folders and prepare them
+for item in SOURCES:
+    processFolder(training_X, training_Y, item[0], item[1])
 
-    # convert
-    prepareFrame(training_X, training_Y, framePath, item[1])
-
-    i += 1
-
-    if i % 100 == 0:
-        print("Frame: " + str(i))
+print("Ending...")
 
 # convert training vars to np array
 training_X = np.array(training_X)
@@ -58,4 +83,4 @@ training_Y = np.array(training_Y)
 pickle.dump(training_X, open(TRAINING_DATA_NAME + "-input.p", "wb"))
 pickle.dump(training_Y, open(TRAINING_DATA_NAME + "-output.p", "wb"))
 
-print(str(i) + " frames total.")
+print("Done!")
