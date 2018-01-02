@@ -28,3 +28,10 @@ Hiding HUD
 Open in-game console <kbd>;</kbd> and type:
 
     ui t hud
+
+
+Resources & inspiration
+-----------------------
+
+- [nVidia - End-to-End Deep Learning for Self-Driving Cars](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/)
+- [Lane Detection with Deep Learning ](https://towardsdatascience.com/lane-detection-with-deep-learning-part-1-9e096f3320b7)
