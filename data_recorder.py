@@ -53,15 +53,21 @@ class Recorder(Thread):
     def keyboardTap(self, keycode, character, press):
         if character == "F1" and press:
             self.recording = not self.recording
+            print("==================================")
             print("Recording: " + str(self.recording))
+            print("==================================")
 
             if not self.recording:
                 self.saveState()
 
-    def saveFrame(self):
-        if not self.recording:
-            return
+        if character == "F2" and press and not self.recording:
+            self.saveFrame()
+            self.saveState()
+            print("==================================")
+            print("Single frame taken!")
+            print("==================================")
 
+    def saveFrame(self):
         if self.frameIndex % 10 == 0:
             print("Saving frame " + str(self.frameIndex))
 
