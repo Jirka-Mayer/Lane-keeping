@@ -11,8 +11,8 @@ from keras.layers.normalization import BatchNormalization
 #from keras import regularizers
 
 # load training data
-training_X = pickle.load(open("training-data-2-input.p", "rb"))
-training_Y = pickle.load(open("training-data-2-output.p", "rb"))
+training_X = pickle.load(open("training-data-4-input.p", "rb"))
+training_Y = pickle.load(open("training-data-4-output.p", "rb"))
 
 # shuffle data
 training_X, training_Y = sklearn.utils.shuffle(training_X, training_Y)

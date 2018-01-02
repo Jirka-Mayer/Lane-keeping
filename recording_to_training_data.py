@@ -4,6 +4,10 @@ import cv2
 import os
 import scipy.misc
 import matplotlib.pyplot as plt
+from deform_image import shiftCar, rotateCar
+
+"""
+# Model 2:
 
 SOURCES = [
     ["recording-1-filtered", 0.0],
@@ -14,6 +18,18 @@ SOURCES = [
     ["recording-flat-right", -0.04],
 ]
 TRAINING_DATA_NAME = "training-data-3"
+"""
+
+SOURCES = [
+    ["recording-1", 0.0]
+]
+TRAINING_DATA_NAME = "training-data-4"
+
+DEFORM_IMAGES = True
+
+# EXPERIMENT WITH THESE !!!!
+SHIFT_STEERING = 0.04
+ROTATION_STEERING = 0.04
 
 TRAINING_WIDTH = 160
 TRAINING_HEIGHT = 80
@@ -28,6 +44,26 @@ def prepareFrame(training_X, training_Y, framePath, steering):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame = np.array(frame)
     frame = scipy.misc.imresize(frame, (TRAINING_HEIGHT, TRAINING_WIDTH, 3))
+
+    if DEFORM_IMAGES:
+        deformationRoll = np.random.uniform()
+        
+        # shift a third
+        if deformationRoll < 1/3:
+            shift = np.random.uniform(-1, 1)
+            steering += shift * SHIFT_STEERING
+            frame = shiftCar(frame, shift)
+
+        # rotate a third
+        elif deformationRoll > 2/3:
+            rotation = np.random.uniform(-1, 1)
+            steering += rotation * ROTATION_STEERING
+            frame = rotateCar(frame, rotation)
+
+    # DEBUG
+    #plt.imshow(frame)
+    #plt.show()
+    #exit()
 
     training_X.append(frame / IMAGE_NORMALIZATION)
     training_Y.append(steering / STEERING_NORMALIZATION)
