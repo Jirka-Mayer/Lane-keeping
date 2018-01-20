@@ -1,21 +1,32 @@
-from vjoy import vj, setJoy
+#from vjoy import vj, setJoy
 import serial
 import time
+from threading import Thread
 
-SCALE = 16000.0
-TRIMMER = 0.025
-print("Openning vJoy...")
-vj.open()
-time.sleep(1)
+PWM_CENTER = 1487 # PWM center time
+PWM_SCALE = 420.0 # PWM time range
 
-ser = serial.Serial("COM3")
-PWM_CENTER = 1487
-PWM_SCALE = 420.0
+EASE = 0.3 # Range limit for finer control
 
-EASE = 0.3
+class ArduinoController(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+        self.alive = True
+        
+        self.serial = None
+        try:
+            self.serial = serial.Serial("COM3")
+        except serial.serialutil.SerialException:
+            print("Arduino not found!")
+            self.alive = False
 
-while True:
-    pwm = int(ser.readline().decode("ansi"))
-    steer = ((PWM_CENTER - pwm) / PWM_SCALE) * EASE
-    print("Steer: ", steer)
-    setJoy(steer + TRIMMER, 0.0, SCALE)
+        # publicly accessible steering value
+        self.steering = 0.0
+
+    def stop(self):
+        self.alive = False
+
+    def run(self):
+        while self.alive:
+            pwm = int(self.serial.readline().decode("ansi"))
+            self.steering = ((PWM_CENTER - pwm) / PWM_SCALE) * EASE

@@ -1,6 +1,7 @@
 import mss
 import numpy as np
 import cv2
+import scipy.misc
 
 CAPTURE_PROFILES = {
     "Desktop-Win10": {
@@ -20,17 +21,23 @@ CAPTURE_PROFILES = {
 }
 
 class ScreenCapturer():
-    def __init__(self, profileName, invertColorOrder=False):
+    def __init__(self, profileName="Desktop-Win10", invertColorOrder=True, prepareForModel=True):
         self.profile = CAPTURE_PROFILES[profileName]
         self.sct = mss.mss()
 
         # RGB to BGR
         self.invertColorOrder = invertColorOrder
 
+        self.prepareForModel = prepareForModel
+
     def capture(self):
         shot = np.array(self.sct.grab(self.profile))
         
         if self.invertColorOrder:
             shot = cv2.cvtColor(shot, cv2.COLOR_BGR2RGB)
+
+        if self.prepareForModel:
+            shot = scipy.misc.imresize(shot, (80, 160, 3))
+            shot = shot / 255
 
         return shot

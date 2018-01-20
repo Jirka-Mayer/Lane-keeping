@@ -9,7 +9,7 @@ vj.open()
 time.sleep(1)
 
 class SteeringController():
-    def __init__(self, keyboardHook, mouseHook):
+    def __init__(self, keyboardHook):
         # joystick axis position
         self.xPos = 0.0
         self.yPos = 0.0
@@ -22,12 +22,11 @@ class SteeringController():
         # if the keyboard overrides the network
         self.keyboardActive = False
 
-        # bind listeners
+        # bind listener to keyboard
         keyboardHook.addTapListener(self.keyboardTap)
-        mouseHook.addMoveListener(self.mouseMove)
 
     def updateJoystick(self):
-        print("Steering: " + str(self.xPos))
+        #print("Steering: " + str(self.xPos))
         setJoy(self.xPos + TRIMMER, self.yPos, SCALE)
 
     def keyboardTap(self, keycode, character, press):
@@ -51,21 +50,7 @@ class SteeringController():
                 self.xPos = 0.0
             self.updateJoystick()
 
-    def mouseMove(self, x, y):
-        # get pos
-        self.currentPosition = x
-        self.xPos = (x - self.neutralPosition) / self.sensitivity
-
-        # clamp
-        if self.xPos > 1:
-            self.xPos = 1
-        elif self.xPos < -1:
-            self.xPos = -1
-
-        # update joystick
-        self.updateJoystick()
-
-    def steerNetwork(self, steering):
+    def updateSteering(self, steering):
         if self.keyboardActive:
             return
         
